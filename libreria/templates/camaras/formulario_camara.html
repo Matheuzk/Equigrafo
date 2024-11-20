@@ -1,0 +1,37 @@
+<!-- Formulario para subir archivos -->
+<form enctype="multipart/form-data" method="post">
+
+    <!-- Token -->
+    {% csrf_token %}
+    <!-- Campos del formulario -->
+    {% for campo in formulario %}
+
+    <div class="mb-3">
+        
+        <!-- Etiqueta -->
+        <label for="" class="form-label">{{ campo.label }}:</label>
+
+        <!-- Mostrar imagen si es archivo -->
+        {% if campo.field.widget.input_type == 'file' and campo.value %}
+        <br />
+        <img src="{{MEDIA}}/imagenes/{{campo.value}}" alt="" height="100" />
+        {% endif %}
+
+        <!-- Campo de entrada -->
+        <input type="{{ campo.field.widget.input_type }}" class="form-control" name="{{campo.name}}" id=""
+            aria-describedby="helpId" placeholder="{{ campo.label }}"
+            value="{% if campo.name == 'precio' or campo.name == 'precio_compra' %}{{ campo.value|floatformat:0 }}{% else %}{{ campo.value|default_if_none:'' }}{% endif %}" />
+
+    </div>
+
+    <!-- Errores del campo -->
+    <div class="col-12 help-text">{{campo.errors}}</div>
+    {% endfor %}
+
+    <!-- Botón enviar -->
+    <input name="" id="" class="btn from-bottom" type="submit" value="Enviar Información" />
+
+    <!-- Enlace cancelar -->
+    <a name="" id="" class="btn from-bottom" href="{% url 'camaras' %}" role="button">Cancelar</a>
+
+</form>

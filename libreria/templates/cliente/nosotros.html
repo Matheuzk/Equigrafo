@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros - EquiGrafo</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/fondo_nosotros.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+
+        .overlay {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        main {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0 0 1rem;
+            text-align: left;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: #e7e7e7;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: transform 0.3s ease, background 0.3s ease, height 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .card:hover {
+            background: #d4d4d4;
+            transform: scale(1.05);
+            height: auto;
+        }
+
+        .card-content {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-content {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            display: none;
+        }
+
+        .card:hover .card-description {
+            display: block;
+        }
+
+        .objectives ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives li {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: background 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .objectives li:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+
+        .objectives li:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        .objectives li:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+
+        .objectives li:nth-child(4) {
+            transition-delay: 0.4s;
+        }
+
+        .objectives li:nth-child(5) {
+            transition-delay: 0.5s;
+        }
+
+        .objectives li:nth-child(6) {
+            transition-delay: 0.6s;
+        }
+
+        .card:hover .objectives li {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        section {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .nosotros-container {
+            background-color: #303030;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .nosotros-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb, #a18cd1, #fbc2eb, #fad0c4, #ff9a9e);
+            color: #000;
+        }
+
+        .nosotros-container ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        /* Personalización del scroll */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+    <main>
+        <section class="nosotros-container">
+            <h2>Sobre Nosotros</h2>
+            <p>Somos un equipo de estudiantes de la Facultad de Ingeniería, especializados en el desarrollo de
+                aplicaciones web. Nuestro proyecto, <strong>EquiGrafo</strong>, se centra en la creación de una
+                plataforma para la gestión e información de una tienda de videocámaras y cámaras fotográficas.</p>
+        </section>
+
+        <section class="nosotros-container">
+            <h3>Integrantes del Proyecto</h3>
+            <ul>
+                <li>Mateo Antonio Valencia Rojas</li>
+                <li>Laura Marcela Ocampo Arango</li>
+            </ul>
+        </section>
+
+        <div class="grid-container">
+            <div class="card" style="background-color: #FFB6C1;">
+                <div class="card-title">Descripción del Proyecto</div>
+                <div class="card-content">
+                    <p class="card-description">En Medellín, el mercado de cámaras profesionales está en expansión, y la
+                        tienda EquiGrafo registra en promedio 200 ventas mensuales de equipos fotográficos. Sin embargo,
+                        una parte significativa de los clientes, especialmente los principiantes, enfrenta dificultades
+                        al elegir la cámara adecuada debido a la falta de información técnica clara y accesible. Esto
+                        provoca descontento en los clientes y reduce las ventas, ya que no se logra conectar el producto
+                        correcto con el comprador adecuado.</p>
+                    <p class="card-description">Adicionalmente, la tienda experimenta dificultades en la gestión de
+                        inventarios, ventas y clientes, debido a la ausencia de un sistema que controle estos procesos
+                        de manera eficiente. Los errores en el control de productos de alta demanda y valor impactan
+                        negativamente en la rentabilidad de la tienda.</p>
+                    <p class="card-description">Nuestra propuesta es una aplicación web que automatice la gestión de
+                        productos, ventas y facturación en la tienda EquiGrafo. La plataforma permitirá a la tienda
+                        gestionar el inventario de equipos especializados, registrar ventas y generar reportes
+                        detallados. Además, los clientes podrán acceder a información clara y detallada sobre las
+                        cámaras, lo que les permitirá tomar decisiones más informadas, mejorando tanto su experiencia de
+                        compra como la eficiencia operativa de la tienda.</p>
+                </div>
+            </div>
+
+            <div class="card" style="background-color: #ADD8E6;">
+                <div class="card-title">Objetivos del Proyecto</div>
+                <div class="card-content objectives">
+                    <ul>
+                        <li>Desarrollar una aplicación web para la gestión e información de una tienda de videocámaras y
+                            cámaras fotográficas, facilitando la administración de productos, pedidos, clientes y
+                            facturación.</li>
+                        <li>Analizar el problema de gestión de inventarios y ventas en la tienda EquiGrafo,
+                            identificando los principales obstáculos que enfrentan los empleados y los clientes al
+                            momento de seleccionar cámaras y administrar productos.</li>
+                        <li>Diseñar la estructura de la aplicación web, enfocada en la automatización de la gestión de
+                            productos, ventas y facturación, asegurando la accesibilidad para los empleados y un sistema
+                            claro para los clientes.</li>
+                        <li>Desarrollar una interfaz de usuario funcional y fácil de usar que permita a los empleados
+                            gestionar el inventario y las ventas, y a los clientes consultar y filtrar cámaras según sus
+                            especificaciones.</li>
+                        <li>Probar la aplicación en diferentes entornos para verificar su correcto funcionamiento,
+                            asegurando la integridad de los datos y la experiencia de usuario tanto para empleados como
+                            para clientes.</li>
+                        <li>Implementar mejoras y ajustes basados en los resultados de las pruebas, optimizando el
+                            rendimiento del sistema y la experiencia de usuario final.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
+{% endblock %}

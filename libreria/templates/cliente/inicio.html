@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load custom_filters %}
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<div class="p-5 bg-light">
+    <div class="container">
+        <!-- Contenedor de bienvenida -->
+        <div class="welcome-container">
+            <h1 class="welcome-text">Bienvenidos a EquiGrafo</h1>
+            <p>Tienda de camaras y video camaras fotograficas</p>
+        </div>
+        <!-- Formulario de búsqueda -->
+        <form method="GET" action="{% url 'inicio' %}" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Buscar...">
+                </div>
+                <div class="col-md-3">
+                    <label for="mp_range" class="form-label">Rango de MP</label>
+                    <select id="mp_range" name="mp_range" class="form-select">
+                        <option value="">Selecciona un rango</option>
+                        <option value="20-30">20-30 MP</option>
+                        <option value="30-40">30-40 MP</option>
+                        <option value="40-50">40-50 MP</option>
+                        <option value="60-max">60 MP y más</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="resolution" class="form-label">Resolución</label>
+                    <select id="resolution" name="resolution" class="form-select">
+                        <option value="">Selecciona una resolución</option>
+                        <option value="4K">4K</option>
+                    </select>
+                </div>
+                <div class="col-md-3 align-self-end">
+                    <button type="submit" class="btn btn-primary btn-custom">Buscar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Carrusel de recomendaciones -->
+        <div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for i in camaras_recomendadas %}
+                <button type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"
+                    aria-current="true" aria-label="Slide {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
+            <div class="carousel-inner">
+                {% for camara in camaras_recomendadas %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="carousel-image-container">
+                        <img src="{{ camara.image.url }}" class="d-block w-100" alt="{{ camara.titulo }}">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>{{ camara.titulo }}</h5>
+                            <p>{{ camara.descripcion }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- Sección de cámaras Nikon -->
+        {% if camaras_nikon %}
+        <p class="lead">Cámaras Nikon</p>
+        <hr class="my-2">
+        <div class="row">
+            {% for camara in camaras_nikon %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm camara-card">
+                    <div class="camara-overlay">
+                        <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
+                        <div class="camara-dark-overlay"></div>
+                        <div class="camara-text">
+                            <h5>{{ camara.titulo }}</h5>
+                            {% if camara.cantidad == 0 %}
+                            <p class="badge bg-danger">Agotado</p>
+                            {% endif %}
+                            <p>{{ camara.descripcion }}</p>
+                            <p>Precio: ${{ camara.precio|formato_latino }}</p>
+                            {% if camara.cantidad == 0 %}
+                            <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Sección de cámaras Sony -->
+        {% if camaras_sony %}
+        <p class="lead">Cámaras Sony</p>
+        <hr class="my-2">
+        <div class="row">
+            {% for camara in camaras_sony %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm camara-card">
+                    <div class="camara-overlay">
+                        <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
+                        <div class="camara-dark-overlay"></div>
+                        <div class="camara-text">
+                            <h5>{{ camara.titulo }}</h5>
+                            {% if camara.cantidad == 0 %}
+                            <p class="badge bg-danger">Agotado</p>
+                            {% endif %}
+                            <p>{{ camara.descripcion }}</p>
+                            <p>Precio: ${{ camara.precio }}</p>
+                            {% if camara.cantidad == 0 %}
+                            <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Sección de cámaras Canon -->
+        {% if camaras_canon %}
+        <p class="lead">Cámaras Canon</p>
+        <hr class="my-2">
+        <div class="row">
+            {% for camara in camaras_canon %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm camara-card">
+                    <div class="camara-overlay">
+                        <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
+                        <div class="camara-dark-overlay"></div>
+                        <div class="camara-text">
+                            <h5>{{ camara.titulo }}</h5>
+                            {% if camara.cantidad == 0 %}
+                            <p class="badge bg-danger">Agotado</p>
+                            {% endif %}
+                            <p>{{ camara.descripcion }}</p>
+                            <p>Precio: ${{ camara.precio }}</p>
+                            {% if camara.cantidad == 0 %}
+                            <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Sección de otras cámaras -->
+        {% if camaras_otros %}
+        <p class="lead">Otras Cámaras</p>
+        <hr class="my-2">
+        <div class="row">
+            {% for camara in camaras_otros %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm camara-card">
+                    <div class="camara-overlay">
+                        <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
+                        <div class="camara-dark-overlay"></div>
+                        <div class="camara-text">
+                            <h5>{{ camara.titulo }}</h5>
+                            {% if camara.cantidad == 0 %}
+                            <p class="badge bg-danger">Agotado</p>
+                            {% endif %}
+                            <p>{{ camara.descripcion }}</p>
+                            <p>Precio: ${{ camara.precio }}</p>
+                            {% if camara.cantidad == 0 %}
+                            <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="tiendaModal" tabindex="-1" aria-labelledby="tiendaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tiendaModalLabel">Dirección de la Tienda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Nuestra tienda se encuentra en:
+                <address>
+                    Calle 12# 60-10, Ciudad Medellin
+                </address>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilo -->
+<style>
+    body {
+        background-image: url("{% static 'images/30.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+    .p-5.bg-light {
+        background-color: transparent !important;
+    }
+
+    .container {
+        background-color: transparent;
+    }
+
+    .welcome-container {
+        background-color: #303030;
+        color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+        margin-bottom: 20px;
+    }
+
+    .welcome-container:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb, #a18cd1, #fbc2eb, #fad0c4, #ff9a9e);
+        color: #000;
+    }
+
+    .welcome-text {
+        font-size: 2em;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+    }
+
+    .carousel-image-container {
+        position: relative;
+        height: 300px; /* Ajusta la altura del carrusel */
+        overflow: hidden;
+    }
+
+    .carousel-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    }
+
+    .camara-overlay {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .camara-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .camara-dark-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .camara-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        width: 90%;
+        max-height: 80%;
+        overflow-y: auto;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .camara-text::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .camara-text::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .camara-text::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .camara-overlay:hover .camara-dark-overlay {
+        opacity: 1;
+    }
+
+    .camara-overlay:hover .camara-image {
+        transform: scale(1.1);
+    }
+
+    .camara-overlay:hover .camara-text {
+        opacity: 1;
+    }
+
+    .camara-card {
+        border: none;
+        overflow: hidden;
+    }
+
+    .hidden-container {
+        display: none;
+    }
+
+    .lead {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #020202;
+        text-transform: uppercase;
+        margin-top: 20px;
+    }
+
+    hr.my-2 {
+        border-top: 3px solid #000000;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .camara-text h5 {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .btn-custom {
+        background-color: #303030;
+        color: #ffffff;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #dca8da;
+        color: #000000;
+    }
+
+    /* Personalización del scroll */
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+    }
+
+</style>
+
+{% endblock %}

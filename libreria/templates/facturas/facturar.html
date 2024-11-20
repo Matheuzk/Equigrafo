@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row">
+
+        <!-- Productos Disponibles -->
+        <div class="col-md-4">
+            <div class="card custom-card fade-in-element">
+                <div class="card-header bg-productos-disponibles text-white">
+                    <h3>Productos Disponibles</h3>
+                </div>
+                <div class="card-body">
+                    <input type="text" id="search-products" class="form-control mb-3" placeholder="Buscar productos...">
+                    <div class="list-group" id="available-products" style="max-height: 200px; overflow-y: auto;">
+
+                        {% for camara in camaras %}
+                        {% if camara.cantidad > 0 %}
+                        <a href="#" class="list-group-item list-group-item-action" data-id="{{ camara.id }}"
+                            data-title="{{ camara.titulo }}" data-price="{{ camara.precio }}"
+                            data-available-quantity="{{ camara.cantidad }}">
+                            <h5 class="mb-1">{{ camara.titulo }}</h5>
+                            <p class="mb-1">{{ camara.descripcion }}</p>
+                            <small>Precio: ${{ camara.precio|formato_latino }}</small>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos Seleccionados -->
+        <div class="col-md-4">
+            <div class="card custom-card fade-in-element">
+                <div class="card-header bg-productos-seleccionados text-white">
+                    <h3>Productos Seleccionados</h3>
+                </div>
+                <div class="card-body">
+                    <ul id="selected-products" class="list-group mb-3" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Productos seleccionados se mostrarán aquí -->
+                    </ul>
+                    <h4>Total: $<span id="total-amount">{{ total_amount|formato_latino }}</span></h4>
+                    <div class="form-group mt-3">
+                        <label for="payment-amount">Monto a Pagar:</label>
+                        <input type="number" id="payment-amount" class="form-control" step="0.01" min="0">
+                    </div>
+                    <h4 class="mt-3">Cambio: $<span id="change-amount">0.00</span></h4>
+                    <form id="factura-form" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="productos" id="productos">
+                        <input type="hidden" name="total_pagado" id="total-pagado">
+                        <button type="button" id="finalize-purchase"
+                            class="btn btn-success btn-finalize-purchase mt-3">Finalizar Compra</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factura -->
+        <div class="col-md-4">
+            <div class="card custom-card fade-in-element">
+                <div class="card-header bg-factura text-white">
+                    <h3>Factura</h3>
+                </div>
+                <div class="card-body">
+                    <div id="invoice" class="border p-3">
+                        <!-- Contenido de la factura -->
+                    </div>
+                    <button id="view-details" class="btn btn-info btn-view-details mt-3">Ver Detalles</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos Agotados -->
+        <div class="col-md-4 mt-3">
+            <div class="card custom-card fade-in-element">
+                <div class="card-header bg-productos-agotados text-white">
+                    <h3>Productos Agotados</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                        {% for camara in camaras %}
+                        {% if camara.cantidad == 0 %}
+                        <div class="list-group-item">
+                            <h5 class="mb-1">{{ camara.titulo }}</h5>
+                            <p class="mb-1">{{ camara.descripcion }}</p>
+                            <small>Precio: ${{ camara.precio|formato_latino }}</small>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectedProducts = document.getElementById('selected-products');
+        const totalAmount = document.getElementById('total-amount');
+        const paymentAmount = document.getElementById('payment-amount');
+        const changeAmount = document.getElementById('change-amount');
+        const finalizePurchase = document.getElementById('finalize-purchase');
+        const productosInput = document.getElementById('productos');
+        const totalPagadoInput = document.getElementById('total-pagado');
+        const facturaForm = document.getElementById('factura-form');
+        const viewDetailsButton = document.getElementById('view-details');
+        const searchProducts = document.getElementById('search-products');
+        const availableProducts = document.getElementById('available-products');
+
+        let total = 0;
+        let productos = [];
+
+        document.querySelectorAll('.list-group-item-action').forEach(item => {
+            item.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                const title = this.getAttribute('data-title');
+                const price = parseFloat(this.getAttribute('data-price'));
+                const availableQuantity = parseInt(this.getAttribute('data-available-quantity'));
+
+                // Verificar si el producto ya está en la lista seleccionada
+                const existingProduct = Array.from(selectedProducts.children).find(p => p.dataset.id === id);
+
+                if (existingProduct) {
+                    // Si ya existe, incrementar la cantidad
+                    const quantityElement = existingProduct.querySelector('.quantity');
+                    const currentQuantity = parseInt(quantityElement.textContent);
+                    if (currentQuantity < availableQuantity) {
+                        // Incrementar el contador de cantidad
+                        quantityElement.textContent = currentQuantity + 1;
+                        total += price; // Actualizar total
+                        totalAmount.textContent = total.toFixed(2);
+
+                        // Actualizar la cantidad en el arreglo de productos
+                        const product = productos.find(p => p.id === id);
+                        product.cantidad += 1;
+                    } else {
+                        alert(`No se puede agregar más de ${availableQuantity} unidades de ${title}.`);
+                        return;
+                    }
+                } else {
+                    // Si es nuevo, crear un nuevo elemento
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    listItem.dataset.id = id; // Almacenar el id en el elemento
+                    listItem.innerHTML = `${title} - $${price.toFixed(2)} <span class="quantity">1</span>`;
+
+                    const removeButton = document.createElement('button');
+                    removeButton.className = 'btn btn-danger btn-sm';
+                    removeButton.textContent = 'Quitar';
+                    removeButton.addEventListener('click', function () {
+                        // Al hacer clic en "Quitar", eliminar todos los elementos con el mismo ID
+                        const quantity = parseInt(listItem.querySelector('.quantity').textContent);
+                        total -= price * quantity; // Actualizar total
+                        totalAmount.textContent = total.toFixed(2);
+                        selectedProducts.removeChild(listItem);
+                        productos = productos.filter(p => p.id !== id); // Filtrar el arreglo de productos
+                        updateChange();
+                    });
+
+                    listItem.appendChild(removeButton);
+                    selectedProducts.appendChild(listItem);
+
+                    total += price; // Actualizar total
+                    totalAmount.textContent = total.toFixed(2);
+
+                    // Almacenar el producto
+                    productos.push({ id, cantidad: 1, precio_unitario: price });
+                }
+
+                updateChange();
+            });
+        });
+
+
+        viewDetailsButton.addEventListener('click', function () {
+            window.location.href = "{% url 'detalles_factura' %}";
+        });
+
+        paymentAmount.addEventListener('input', updateChange);
+
+        finalizePurchase.addEventListener('click', function () {
+            const payment = parseFloat(paymentAmount.value);
+
+            // Validar si el monto pagado excede los 12 dígitos
+            if (payment.toFixed(2).length > 12) {
+                alert('La cantidad es muy alta para el precio de los productos. Revise su selección.');
+                return;
+            }
+
+            const change = parseFloat(changeAmount.textContent);
+            if (change < 0) {
+                alert('El cambio no puede ser negativo.');
+                return;
+            }
+
+            productosInput.value = productos.map(p => `${p.id},${p.cantidad},${p.precio_unitario}`).join(';');
+            totalPagadoInput.value = payment.toFixed(2);
+
+            const formData = new FormData(facturaForm);
+            fetch(facturaForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayInvoice(data);
+                    clearSelectedProducts();
+                    updateAvailableProducts(data.productos_actualizados);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function updateChange() {
+            const payment = parseFloat(paymentAmount.value) || 0;
+            const change = payment - total;
+            changeAmount.textContent = change.toFixed(2);
+        }
+
+        function displayInvoice(data) {
+            invoice.innerHTML = `
+            <h4>Factura ID: ${data.factura_id}</h4>
+            <p>Total Pagado: $${data.total_pagado}</p>
+            <p>Total Vendido: $${data.total_vendido}</p>
+            <p>Restante: $${data.restante}</p>
+            <h5>Productos:</h5>
+            <ul>
+                ${data.productos.map(p => `<li>${p.titulo} - Cantidad: ${p.cantidad} - Precio Unitario: $${p.precio_unitario}</li>`).join('')}
+            </ul>
+        `;
+        }
+
+        function clearSelectedProducts() {
+            selectedProducts.innerHTML = '';
+            total = 0;
+            totalAmount.textContent = '0.00';
+            productos = [];
+            updateChange();
+            changeAmount.textContent = '0.00';
+        }
+
+        function updateAvailableProducts(updatedProducts) {
+            const availableProductsContainer = document.querySelector('.col-md-4 .list-group');
+            availableProductsContainer.innerHTML = '';
+            updatedProducts.forEach(product => {
+                if (product.cantidad > 0) {
+                    const productItem = document.createElement('a');
+                    productItem.href = '#';
+                    productItem.className = 'list-group-item list-group-item-action';
+                    productItem.dataset.id = product.id;
+                    productItem.dataset.title = product.titulo;
+                    productItem.dataset.price = product.precio;
+                    productItem.innerHTML = `
+                    <h5 class="mb-1">${product.titulo}</h5>
+                    <p class="mb-1">${product.descripcion}</p>
+                    <small>Precio: $${product.precio}</small>
+                `;
+                    availableProductsContainer.appendChild(productItem);
+                    productItem.addEventListener('click', function () {
+                        const id = this.getAttribute('data-id');
+                        const title = this.getAttribute('data-title');
+                        const price = parseFloat(this.getAttribute('data-price'));
+
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        listItem.textContent = `${title} - $${price.toFixed(2)}`;
+                        listItem.dataset.price = price;
+
+                        const removeButton = document.createElement('button');
+                        removeButton.className = 'btn btn-danger btn-sm';
+                        removeButton.textContent = 'Quitar';
+                        removeButton.addEventListener('click', function () {
+                            total -= price;
+                            totalAmount.textContent = total.toFixed(2);
+                            selectedProducts.removeChild(listItem);
+                            productos = productos.filter(p => p.id !== id);
+                            updateChange();
+                        });
+
+                        listItem.appendChild(removeButton);
+                        selectedProducts.appendChild(listItem);
+
+                        total += price;
+                        totalAmount.textContent = total.toFixed(2);
+                        productos.push({ id, cantidad: 1, precio_unitario: price });
+                        updateChange();
+                    });
+                }
+            });
+        }
+
+        searchProducts.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            document.querySelectorAll('.list-group-item-action').forEach(item => {
+                const title = item.getAttribute('data-title').toLowerCase();
+                if (title.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-element {
+        animation-name: fadeIn;
+        animation-duration: 1s;
+        animation-timing-function: ease-in-out;
+    }
+
+    body {
+        background-image: url("{% static 'images/fondo_Factura.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+    .custom-card {
+        background-color: rgba(48, 48, 48, 0.8);
+        color: white;
+        margin-top: 0px;
+    }
+
+    .custom-table {
+        background-color: rgba(48, 48, 48, 0.1);
+        color: white;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        background-color: rgba(48, 48, 48, 0.1);
+        color: white;
+    }
+
+    .custom-table thead th {
+        background-color: rgba(48, 48, 48, 0.1);
+    }
+
+    .btn {
+        position: relative;
+        display: inline-block;
+        color: var(--inv);
+        transition: all 500ms cubic-bezier(0.77, 0, 0.175, 1);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .btn:before,
+    .btn:after {
+        content: '';
+        position: absolute;
+        transition: inherit;
+        z-index: -1;
+    }
+
+    .btn:hover {
+        color: var(--def);
+        transition-delay: .5s;
+    }
+
+    .btn:hover:before {
+        transition-delay: 0s;
+    }
+
+    .btn:hover:after {
+        background: var(--inv);
+        transition-delay: .35s;
+    }
+
+    .from-bottom:before,
+    .from-bottom:after {
+        left: 0;
+        height: 0;
+        width: 100%;
+    }
+
+    .from-bottom:before {
+        top: 0;
+        border: 1px solid var(--inv);
+        border-top: 0;
+        border-bottom: 0;
+    }
+
+    .from-bottom:after {
+        bottom: 0;
+        height: 0;
+    }
+
+    .from-bottom:hover:before,
+    .from-bottom:hover:after {
+        height: 100%;
+    }
+
+    :root {
+        --def: #ac8ec6;
+        --inv: #fff;
+    }
+
+
+
+    .btn-finalize-purchase {
+        background-color: #682d82;
+        border-color: #ac8ec6;
+        
+    }
+
+    .btn-print-invoice,
+    .btn-view-details {
+        background-color: #682d82;
+        border-color: #ac8ec6;
+        
+    }
+
+    h3 {
+    color: rgba(255, 255, 255,); 
+    background-color: rgba(48, 48, 48, 0.3);
+    padding: 4px; 
+}
+</style>
+{% endblock %}

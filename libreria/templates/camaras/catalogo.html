@@ -1,0 +1,232 @@
+<!-- Extiende de la plantilla base -->
+{% extends "base.html" %}
+{% load custom_filters %}
+{% load static %}
+
+<!-- Bloque de título de la página -->
+{% block titulo %}
+Lista de Cámaras
+{% endblock %}
+
+<!-- Bloque de contenido principal -->
+{% block contenido %}
+
+<div class="card custom-card fade-in-element">
+  <!-- Encabezado de la tarjeta -->
+  <div class="card-header">
+    <!-- Botón para agregar una nueva cámara -->
+    <a href="{% url 'crear' %}" class="btn from-bottom">Agregar nueva cámara</a>
+    <!-- Campo de búsqueda para filtrar cámaras -->
+    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Buscar cámaras..." class="form-control"
+      style="margin-top: 10px;">
+  </div>
+
+  <div class="card-body">
+    <h4 class="card-title">Cámaras</h4>
+
+    <!-- Tabla de cámaras -->
+    <div class="table-responsive">
+      <table class="table table-striped custom-table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Título</th>
+            <th scope="col">Imagen</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Venta</th>
+            <th scope="col">Comprado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Itera sobre la lista de cámaras -->
+          {% for camara in camaras %}
+          <tr class="{% if camara.cantidad == 0 %}table-danger-border{% endif %}">
+            <td>{{ camara.id }}</td>
+            <td>{{ camara.titulo }}</td>
+            <td>
+              <!-- Muestra la imagen de la cámara -->
+              <img src="{{ camara.image.url }}" height="100">
+            </td>
+            <td>{{ camara.descripcion }}</td>
+            <td>
+              {{ camara.cantidad }}
+
+              <!-- Muestra un aviso si la cantidad es cero -->
+              {% if camara.cantidad == 0 %}
+              <span class="badge bg-danger">Agotado</span>
+              {% endif %}
+            </td>
+
+            <td>{{ camara.precio|formato_latino }}</td>
+            <td>{{ camara.precio_compra|formato_latino }}</td>
+
+            <td>
+              <!-- Botón para editar la cámara -->
+              <a href="{% url 'editar' camara.id %}" class="btn btn-warning btn-sm">
+                <i class="fas fa-pencil-alt"></i>
+              </a>
+              <!-- Botón para eliminar la cámara -->
+              <a href="{% url 'eliminar' camara.id %}" class="btn btn-danger btn-sm"
+                onclick="return confirm('¿Estás seguro de que deseas eliminar esta cámara? Esta acción quedará registrada.');">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+            </td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card-footer text-muted"></div>
+
+</div>
+
+<!-- Estilos personalizados para la animación y la tabla -->
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-element {
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+  }
+
+  body {
+    background-image: url("{% static 'images/fondo_inventario.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .custom-card {
+    background-color: rgba(48, 48, 48, 0.8);
+    color: white;
+    margin-top: 30px;
+  }
+
+  .custom-table {
+    background-color: rgba(48, 48, 48, 0.1);
+    color: white;
+  }
+
+  .custom-table th,
+  .custom-table td {
+    background-color: rgba(48, 48, 48, 0.1);
+    color: white;
+  }
+
+  .custom-table thead th {
+    background-color: rgba(48, 48, 48, 0.1);
+  }
+
+  .btn {
+    position: relative;
+    display: inline-block;
+    color: var(--inv);
+    transition: all 500ms cubic-bezier(0.77, 0, 0.175, 1);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .btn:before,
+  .btn:after {
+    content: '';
+    position: absolute;
+    transition: inherit;
+    z-index: -1;
+  }
+
+  .btn:hover {
+    color: var(--def);
+    transition-delay: .5s;
+  }
+
+  .btn:hover:before {
+    transition-delay: 0s;
+  }
+
+  .btn:hover:after {
+    background: var(--inv);
+    transition-delay: .35s;
+  }
+
+  .from-bottom:before,
+  .from-bottom:after {
+    left: 0;
+    height: 0;
+    width: 100%;
+  }
+
+  .from-bottom:before {
+    top: 0;
+    border: 1px solid var(--inv);
+    border-top: 0;
+    border-bottom: 0;
+  }
+
+  .from-bottom:after {
+    bottom: 0;
+    height: 0;
+  }
+
+  .from-bottom:hover:before,
+  .from-bottom:hover:after {
+    height: 100%;
+  }
+
+  :root {
+    --def: #ac8ec6;
+    --inv: #fff;
+  }
+      /* Personalización del scroll */
+      ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+    }
+</style>
+
+<!-- Script para la funcionalidad de búsqueda en la tabla -->
+<script>
+  function searchTable() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toLowerCase();
+    table = document.querySelector(".custom-table");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+      tr[i].style.display = "none";
+      td = tr[i].getElementsByTagName("td");
+      for (j = 0; j < td.length; j++) {
+        if (td[j]) {
+          txtValue = td[j].textContent || td[j].innerText;
+          if (txtValue.toLowerCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+            break;
+          }
+        }
+      }
+    }
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block contenido %}
+<style>
+    body {
+        background-image: url("{% static 'images/fondo_estadistica.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    .container {
+        background: rgba(255, 255, 255, 0.7);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+        animation: fadeIn 1s ease-in-out;
+    }
+    .col-md-4 {
+        margin-bottom: 20px;
+        animation: slideInUp 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideInUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Estadísticas de Hoy</h3>
+            <p>Ventas de hoy: ${{ ventas_hoy|formato_latino }}</p>
+            <p>Ganancias de hoy: ${{ ganancia_hoy|formato_latino }}</p>
+            <canvas id="salesChartHoy" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-4">
+            <h3>Estadísticas de Ayer</h3>
+            <p>Ventas de ayer: ${{ ventas_ayer|formato_latino }}</p>
+            <p>Ganancias de ayer: ${{ ganancia_ayer|formato_latino }}</p>
+            <canvas id="salesChartAyer" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-4">
+            <h3>Estadísticas de la Semana</h3>
+            <p>Ventas de la semana: ${{ ventas_semana|formato_latino }}</p>
+            <p>Ganancias de la semana: ${{ ganancia_semana|formato_latino }}</p>
+            <canvas id="salesChartSemana" width="400" height="200"></canvas>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h3>Cámaras Más Vendidas</h3>
+            <div class="row">
+                {% for camara in top_camaras %}
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ camara.foto }}" class="card-img-top" alt="{{ camara.titulo }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ camara.titulo }}</h5>
+                            <p class="card-text">Precio: ${{ camara.precio|formato_latino }}</p>
+                            <p class="card-text">Total Vendido: {{ camara.total_vendido }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ventasHoy = parseFloat("{{ ventas_hoy|default:0 }}");
+        const ventasAyer = parseFloat("{{ ventas_ayer|default:0 }}");
+        const ventasSemana = parseFloat("{{ ventas_semana|default:0 }}");
+        
+        const gananciaHoy = parseFloat("{{ ganancia_hoy|default:0 }}");
+        const gananciaAyer = parseFloat("{{ ganancia_ayer|default:0 }}");
+        const gananciaSemana = parseFloat("{{ ganancia_semana|default:0 }}");
+
+        // Gráfico de Hoy
+        const ctxHoy = document.getElementById('salesChartHoy').getContext('2d');
+        const salesChartHoy = new Chart(ctxHoy, {
+            type: 'bar',
+            data: {
+                labels: ['Ventas', 'Ganancias'],
+                datasets: [{
+                    label: 'Hoy',
+                    data: [ventasHoy, gananciaHoy],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutBounce'
+                }
+            }
+        });
+
+        // Gráfico de Ayer
+        const ctxAyer = document.getElementById('salesChartAyer').getContext('2d');
+        const salesChartAyer = new Chart(ctxAyer, {
+            type: 'bar',
+            data: {
+                labels: ['Ventas', 'Ganancias'],
+                datasets: [{
+                    label: 'Ayer',
+                    data: [ventasAyer, gananciaAyer],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutBounce'
+                }
+            }
+        });
+
+        // Gráfico de la Semana
+        const ctxSemana = document.getElementById('salesChartSemana').getContext('2d');
+        const salesChartSemana = new Chart(ctxSemana, {
+            type: 'bar',
+            data: {
+                labels: ['Ventas', 'Ganancias'],
+                datasets: [{
+                    label: 'Última Semana',
+                    data: [ventasSemana, gananciaSemana],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutBounce'
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
