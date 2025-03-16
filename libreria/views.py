@@ -13,8 +13,6 @@ import re
 from .forms import RegistroForm, LoginForm, camarasForm
 from .models import Usuario, camaras_base, Factura, ProductoFactura
 
-
-
 def inicio(request): 
     camaras = camaras_base.objects.all()
     search_query = request.GET.get('search')
@@ -29,6 +27,7 @@ def inicio(request):
             ) | camaras.filter(
                 titulo__icontains=keyword
             )
+    camaras_recomendadas = camaras.order_by('?')[:5]
 
     if mp_range:
         min_mp, max_mp = mp_range.split('-')
@@ -46,9 +45,6 @@ def inicio(request):
     camaras_sony = [camara for camara in camaras if 'Sony' in camara.titulo]
     camaras_canon = [camara for camara in camaras if 'Canon' in camara.titulo]
     camaras_otros = [camara for camara in camaras if 'Nikon' not in camara.titulo and 'Sony' not in camara.titulo and 'Canon' not in camara.titulo]
-
-    # Seleccionar recomendaciones aleatorias
-    camaras_recomendadas = camaras.order_by('?')[:5]
 
     context = {
         'camaras_nikon': camaras_nikon,
@@ -296,6 +292,34 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+@login_required
+def empleados(request):
+    if request.user.cargo != 'Gerente':
+        raise PermissionDenied
+    empleados = Usuario.objects.all()
+    return render(request, 'reportes/empleados.html', {'empleados': empleados})
+from django.http import JsonResponse
+
+@login_required
+def empleado_detalles(request, empleado_id):
+    if request.user.cargo != 'Gerente':
+        raise PermissionDenied
+    empleado = Usuario.objects.get(id=empleado_id)
+    facturas = Factura.objects.filter(empleado=empleado).values('id', 'total_vendido', 'fecha')
+    empleado_data = {
+        'nombre': empleado.nombre,
+        'apellido': empleado.apellido,
+        'cedula': empleado.cedula,
+        'direccion': empleado.direccion,
+        'celular': empleado.celular,
+        'fecha_nacimiento': empleado.fecha_nacimiento.strftime('%d/%m/%Y') if empleado.fecha_nacimiento else '',
+        'email': empleado.email,
+        'cargo': empleado.cargo,
+        'last_login': empleado.last_login.strftime('%d/%m/%Y %H:%M:%S') if empleado.last_login else '',
+        'facturas': list(facturas)
+    }
+    return JsonResponse(empleado_data)
+
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.graphics.shapes import Drawing
@@ -305,6 +329,7 @@ from reportlab.lib import colors
 from reportlab.graphics.barcode import qr
 from django.http import HttpResponse
 from .models import Factura, ProductoFactura
+from django.utils.timezone import localtime
 
 @login_required
 def generar_pdf(request, factura_id):
@@ -363,13 +388,13 @@ def generar_pdf(request, factura_id):
     pdf.setFont("Helvetica-Bold", 12)
     pdf.drawString(50, height - 200, f"Factura N°: {factura.id}")
     pdf.drawString(50, height - 220, f"Empleado: {factura.empleado.email}")
-    pdf.drawString(50, height - 240, f"Fecha: {factura.fecha}")
+    pdf.drawString(50, height - 240, f"Fecha: {localtime(factura.fecha).strftime('%d/%m/%Y %H:%M:%S')}")
     pdf.drawString(50, height - 260, f"Total: ${factura.total_vendido}")
     pdf.drawString(50, height - 280, f"Total Pagado: ${factura.total_pagado}")
     pdf.drawString(50, height - 300, f"Restante: ${factura.restante}")
 
     # Código QR
-    qr_data = f"Factura ID: {factura.id}\nEmpleado: {factura.empleado.email}\nFecha: {factura.fecha}\nTotal Pagado: ${factura.total_pagado}\nRestante: ${factura.restante}"
+    qr_data = f"Factura ID: {factura.id}\nEmpleado: {factura.empleado.email}\nFecha: {localtime(factura.fecha).strftime('%d/%m/%Y %H:%M:%S')}\nTotal Pagado: ${factura.total_pagado}\nRestante: ${factura.restante}"
     qr_code = qr.QrCodeWidget(qr_data)
     qr_code_size = 1.5 * inch
     d = Drawing(qr_code_size, qr_code_size)
@@ -419,9 +444,6 @@ def generar_pdf(request, factura_id):
     pdf.setFont("Helvetica-Oblique", 10)
     pdf.drawString(50, 80, "Gracias por su compra en Tienda EquiGrafo")
     pdf.drawString(50, 60, "Visítanos en: www.equigrafo.com")
-    pdf.drawString(50, 40, "Este documento es una representación de una factura electrónica.")
-
-
 
     # Finalizar el PDF
     pdf.showPage()

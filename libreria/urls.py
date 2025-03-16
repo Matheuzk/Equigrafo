@@ -25,6 +25,10 @@ urlpatterns = [
     path('facturar/', views.facturar, name='facturar'),
     
     path('estadisticas/', views.estadisticas, name='estadisticas'),
+
+    path('empleados/', views.empleados, name='empleados'),
+    
+    path('empleado/<int:empleado_id>/detalles/', views.empleado_detalles, name='empleado_detalles'),
     
     path('detalles_factura/', views.detalles_factura, name='detalles_factura'),
     

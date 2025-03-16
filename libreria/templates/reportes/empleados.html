@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contenido %}
+<h1 class="title">Gestión de Empleados</h1>
+<div class="row">
+    {% for empleado in empleados %}
+    <div class="col-md-3">
+        <div class="card employee-card" onclick="showEmployeeDetails({{ empleado.id }})">
+            <img src="{% static 'images/carta.png' %}" class="card-img-top" alt="Foto de perfil">
+            <div class="card-body">
+                <h5 class="card-title">{{ empleado.nombre }} {{ empleado.apellido }}</h5>
+                <p class="card-text">
+                    <strong>Cargo:</strong> {{ empleado.cargo }}<br>
+                    <strong>Último inicio de sesión:</strong> {{ empleado.last_login|date:"d/m/Y H:i:s" }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Detalles del Empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="employeeDetails"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-image: url("{% static 'images/fondo_emplado1.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    .row {
+        margin-left: -5px;
+        margin-right: -5px;
+    }
+
+    .col-md-3 {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-bottom: 20px;
+    }
+
+    .employee-card {
+        background-color: rgba(48, 48, 48, 0.8); /* Color semi transparente */
+        color: white; /* Letras blancas */
+        transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
+        width: 100%;
+        margin: 0 auto;
+        opacity: 0;
+        animation: fadeInUp 0.5s forwards;
+    }
+
+    .employee-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .title {
+        font-size: 2rem;
+        color: white;
+        position: relative;
+        margin-bottom: 1rem;
+        opacity: 0;
+        animation: fadeInDown 0.5s forwards;
+    }
+
+    .title::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        margin-top: 0.5rem;
+        transition: width 0.3s;
+    }
+
+    .title:hover::after {
+        width: 50%;
+    }
+
+    @keyframes fadeInDown {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-block {
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-bottom: 1rem;
+    }
+
+    .factura-block {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<script>
+    function showEmployeeDetails(employeeId) {
+        fetch(`/empleado/${employeeId}/detalles/`)
+            .then(response => response.json())
+            .then(data => {
+                const employeeDetails = document.getElementById('employeeDetails');
+                employeeDetails.innerHTML = `
+                    <div class="info-block">
+                        <h5>Información del Empleado</h5>
+                        <p><strong>Nombre:</strong> ${data.nombre} ${data.apellido}</p>
+                        <p><strong>Cédula:</strong> ${data.cedula}</p>
+                        <p><strong>Dirección:</strong> ${data.direccion}</p>
+                        <p><strong>Celular:</strong> ${data.celular}</p>
+                        <p><strong>Fecha de Nacimiento:</strong> ${data.fecha_nacimiento}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Cargo:</strong> ${data.cargo}</p>
+                        <p><strong>Último inicio de sesión:</strong> ${data.last_login}</p>
+                    </div>
+                    <div class="info-block">
+                        <h5>Facturas Generadas</h5>
+                        ${data.facturas.map(factura => `
+                            <div class="factura-block">
+                                <p><strong>Factura #${factura.id}</strong></p>
+                                <p><strong>Total:</strong> ${factura.total_vendido}</p>
+                                <p><strong>Fecha:</strong> ${factura.fecha}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                const employeeModal = new bootstrap.Modal(document.getElementById('employeeModal'));
+                employeeModal.show();
+            });
+    }
+</script>
+{% endblock %}

@@ -11,6 +11,7 @@ class camaras_base(models.Model):
     cantidad = models.IntegerField(default=0, verbose_name="Cantidad")
     precio = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Precio de Venta")
     precio_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Valor comprado", null=True)
+
     def __str__(self):
         fila = "Titulo: " + self.titulo + " Descripcion: " + self.descripcion
         return fila
@@ -24,11 +25,7 @@ class UsuarioManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError('El usuario debe tener un correo electrónico')
-        user = self.model(
-            email=self.normalize_email(email),
-            username=username,
-            **extra_fields
-        )
+        user = self.model(email=self.normalize_email(email),username=username,**extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -77,21 +74,21 @@ class Usuario(AbstractBaseUser):
         return self.is_admin
 
 class Factura(models.Model):
-    empleado = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='facturas')  # Empleado que realiza la venta
-    fecha = models.DateTimeField(auto_now_add=True)  # Fecha de creación de la factura
-    total_pagado = models.DecimalField(max_digits=12, decimal_places=2)  # Monto pagado por el cliente
-    total_vendido = models.DecimalField(max_digits=12, decimal_places=2)  # Total de lo vendido (suma de los productos)
-    restante = models.DecimalField(max_digits=10, decimal_places=2)  # Diferencia entre lo pagado y el total de la venta
-    productos = models.ManyToManyField(camaras_base, through='ProductoFactura', related_name='facturas')  # Relación con productos
+    empleado = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='facturas')  
+    fecha = models.DateTimeField(auto_now_add=True)  
+    total_pagado = models.DecimalField(max_digits=12, decimal_places=2)  
+    total_vendido = models.DecimalField(max_digits=12, decimal_places=2)  
+    restante = models.DecimalField(max_digits=10, decimal_places=2) 
+    productos = models.ManyToManyField(camaras_base, through='ProductoFactura', related_name='facturas') 
 
     def __str__(self):
         return f"Factura #{self.id} - Empleado: {self.empleado.email} - Total: {self.total_vendido} - Pagado: {self.total_pagado}"
 
 class ProductoFactura(models.Model):
-    factura = models.ForeignKey(Factura, on_delete=models.CASCADE)  # Factura a la que está asociado el producto
-    producto = models.ForeignKey(camaras_base, on_delete=models.CASCADE)  # Producto vendido
-    cantidad = models.PositiveIntegerField()  # Cantidad de productos vendidos
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  # Precio unitario del producto
+    factura = models.ForeignKey(Factura, on_delete=models.CASCADE)  
+    producto = models.ForeignKey(camaras_base, on_delete=models.CASCADE)  
+    cantidad = models.PositiveIntegerField()  
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)  
 
     def __str__(self):
         return f"{self.cantidad} x {self.producto.titulo} (Factura #{self.factura.id})"
