@@ -271,7 +271,9 @@ def registro(request):
         form = RegistroForm()
     return render(request, 'personal/registro.html', {'form': form})
 
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
