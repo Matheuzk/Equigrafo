@@ -86,11 +86,20 @@ WSGI_APPLICATION = 'EquiGrafo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'camaras_base', 
+        'NAME': 'camaras_base',
         'USER': 'root',
-        'PASSWORD': '', 
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
+        'OPTIONS': {
+            # activa Strict Mode al conectar
+            'init_command': "SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'"
+        },
+        'TEST': {
+            'NAME': 'test_camaras_base',
+            'CHARSET': 'utf8mb4',
+            'COLLATION': 'utf8mb4_general_ci',
+        },
     }
 }
 
