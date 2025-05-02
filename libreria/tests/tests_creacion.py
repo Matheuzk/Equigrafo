@@ -1,14 +1,15 @@
 from django.test import TestCase
 from django.urls import reverse
 from ..models import Usuario
-from .utils import log_test_info  # Importa el decorador
+from .utils import log_test_info  
 
 class UsuarioModelTest(TestCase):
+
 
     def setUp(self):
         print("Configurando el entorno de prueba para UsuarioModelTest...")
         self.usuario = Usuario.objects.create(
-            email='test@ejemplo.com',
+            email='testuser@example.com',  # Corregido
             username='testuser',
             nombre='Test',
             apellido='User',
@@ -21,7 +22,7 @@ class UsuarioModelTest(TestCase):
     def test_usuario_creation(self):
         """Prueba la creación de un usuario y verifica sus atributos."""
         print("Verificando atributos del usuario...")
-        self.assertEqual(self.usuario.email, 'test@ejemplo.com')
+        self.assertEqual(self.usuario.email, 'testuser@example.com')
         self.assertEqual(self.usuario.username, 'testuser')
         self.assertEqual(self.usuario.nombre, 'Test')
         self.assertEqual(self.usuario.apellido, 'User')

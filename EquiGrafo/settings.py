@@ -149,7 +149,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 MEDIA_URL = '/imagenes/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # antes era '' → ahora apunta a ./media
 
 AUTH_USER_MODEL = 'libreria.Usuario'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

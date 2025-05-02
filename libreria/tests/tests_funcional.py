@@ -2,9 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from django.test import LiveServerTestCase
 from ..models import Usuario
-from .utils import log_test_info  # Importa el decorador
+from .utils import log_test_info
+from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase  # Importa el decorador
 
-class UsuarioLoginTest(LiveServerTestCase):
+class UsuarioLoginTest(StaticLiveServerTestCase):
 
     def setUp(self):
         print("\n[SETUP] Iniciando el navegador y configurando el entorno de prueba...")
@@ -35,5 +37,6 @@ class UsuarioLoginTest(LiveServerTestCase):
         self.browser.find_element(By.XPATH, '//button[@type="submit"]').click()
         print("[TEST] Formulario enviado. Verificando el título de la página...")
 
-        self.assertIn('Inicio', self.browser.title)
+        
+        self.assertIn('Mi Sitio Web', self.browser.title)  
         print("[TEST] Inicio de sesión exitoso. El título de la página contiene 'Inicio'.")

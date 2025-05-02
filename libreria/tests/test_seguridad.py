@@ -23,7 +23,9 @@ class SimpleSecurityTest(TestCase):
         for url in protected:
             print(f"[TEST] Accediendo a la URL protegida: {url}")
             resp = self.client.get(url)
+            print(f"[DEBUG] Código de estado recibido: {resp.status_code}")
             self.assertEqual(resp.status_code, 302, f"[ERROR] La URL {url} no redirigió correctamente.")
             print(f"[TEST] La URL {url} redirigió correctamente con estado 302.")
+            print(f"[DEBUG] URL de redirección recibida: {resp.url}")
             self.assertIn(reverse('login'), resp.url, f"[ERROR] La URL {url} no redirigió al inicio de sesión.")
             print(f"[TEST] La URL {url} redirigió correctamente al inicio de sesión.")
