@@ -4,7 +4,7 @@ from django.test import LiveServerTestCase
 from ..models import Usuario
 from .utils import log_test_info
 from django.test import LiveServerTestCase
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase  # Importa el decorador
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase  
 
 class UsuarioLoginTest(StaticLiveServerTestCase):
 

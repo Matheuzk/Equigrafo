@@ -9,7 +9,7 @@ class UsuarioModelTest(TestCase):
     def setUp(self):
         print("Configurando el entorno de prueba para UsuarioModelTest...")
         self.usuario = Usuario.objects.create(
-            email='testuser@example.com',  # Corregido
+            email='testuser@example.com', 
             username='testuser',
             nombre='Test',
             apellido='User',
