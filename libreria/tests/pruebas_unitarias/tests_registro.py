@@ -1,13 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
-from ..models import Usuario
-from .utils import log_test_info  
+from ...models import Usuario
+ 
 
-class UsuarioModelTest(TestCase):
-
-
+class PruebaRegistroUsuario(TestCase):
     def setUp(self):
-        print("Configurando el entorno de prueba para UsuarioModelTest...")
+        # Configuración inicial del entorno de prueba
+        print("\n=== Prueba: Registro de Usuario ===")
         self.usuario = Usuario.objects.create(
             email='testuser@example.com', 
             username='testuser',
@@ -16,26 +15,23 @@ class UsuarioModelTest(TestCase):
             cedula='1234567890',
             cargo='Gerente'
         )
-        print("Usuario de prueba creado con éxito.")
 
-    @log_test_info
-    def test_usuario_creation(self):
+   
+    def test_creacion_usuario(self):
         """Prueba la creación de un usuario y verifica sus atributos."""
-        print("Verificando atributos del usuario...")
+        print("Verificando atributos del usuario creado...")
         self.assertEqual(self.usuario.email, 'testuser@example.com')
         self.assertEqual(self.usuario.username, 'testuser')
         self.assertEqual(self.usuario.nombre, 'Test')
         self.assertEqual(self.usuario.apellido, 'User')
         self.assertEqual(self.usuario.cedula, '1234567890')
         self.assertEqual(self.usuario.cargo, 'Gerente')
-        print("Todos los atributos del usuario son correctos.")
+        print("Prueba de creación de usuario completada exitosamente.")
 
-class RegistroViewTest(TestCase):
-
-    @log_test_info
-    def test_registro_view(self):
+  
+    def test_registro_usuario(self):
         """Prueba la vista de registro y verifica que se cree un nuevo usuario."""
-        print("Enviando datos al endpoint de registro...")
+        print("\n=== Prueba: Vista de Registro de Usuario ===")
         response = self.client.post(reverse('registro'), {
             'email': 'newuser@ejemplo.com',
             'username': 'newuser',
@@ -50,9 +46,11 @@ class RegistroViewTest(TestCase):
             'cedula': '9876543210',
             'pin': '10012'
         })
-        print("Verificando el estado de la respuesta...")
-        self.assertEqual(response.status_code, 302)  # Redireccionamiento
+
+        # Verificar que la respuesta sea un redireccionamiento
+        self.assertEqual(response.status_code, 302)
         print("Estado de respuesta correcto (302).")
-        print("Verificando que el usuario se haya creado en la base de datos...")
+
+        # Verificar que el usuario se haya creado en la base de datos
         self.assertTrue(Usuario.objects.filter(email='newuser@ejemplo.com').exists())
-        print("El usuario se creó correctamente en la base de datos.")
+        print("Prueba de registro completada exitosamente.")
