@@ -17,8 +17,8 @@
     .detalle-overlay {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0,0,0,0.75);
-        backdrop-filter: blur(2.5px);
+        background: rgba(0,0,0,0.78);
+        backdrop-filter: blur(8px); /* Más difuminado */
         z-index: 1;
         transition: opacity 0.7s cubic-bezier(.4,1.6,.6,1);
     }
@@ -35,7 +35,7 @@
         width: 50vw;
         min-height: 60vh;
         display: flex;
-        flex-direction: column;
+        flex-direction: row; /* Imagen a la izquierda, info a la derecha */
         justify-content: flex-start;
         background: rgba(24,24,24,0.92);
         border-radius: 2em;
@@ -48,6 +48,28 @@
         animation: slideDown 0.7s cubic-bezier(.4,1.6,.6,1) both;
         opacity: 0;
         pointer-events: none;
+    }
+    .detalle-imagen-bloque {
+        flex: 0 0 200px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        margin-right: 2.5em;
+    }
+    .detalle-imagen-bloque img {
+        width: 170px;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 1.2em;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+        background: #222;
+        border: 2px solid #fff2;
+        margin-top: 0.5em;
+    }
+    .detalle-info {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
     }
     .detalle-titulo {
         font-size: 2.1em;
@@ -122,7 +144,8 @@
         background: rgba(24,24,24,0.92);
     }
     @media (max-width: 900px) {
-        .detalle-container { width: 90vw; left: 5vw; padding: 2em 1em; }
+        .detalle-container { flex-direction: column; width: 90vw; left: 5vw; padding: 2em 1em; }
+        .detalle-imagen-bloque { margin-right: 0; margin-bottom: 1.5em; justify-content: center; }
         .volver-link { right: auto; }
     }
 
@@ -151,27 +174,32 @@
 </style>
 <div class="detalle-overlay" id="detalleOverlay"></div>
 <div class="detalle-container" id="detalleContainer">
-    <div class="detalle-titulo">{{ camara.titulo }}</div>
-    <div class="detalle-descripcion">{{ camara.descripcion }}</div>
-    <div style="display: flex; align-items: center;">
-        <div class="detalle-precio">
-            ${{ camara.precio|formato_latino }}
-        </div>
-        {% if camara.cantidad == 0 %}
-            <button class="btn-agotado" disabled>Agotado</button>
-        {% endif %}
+    <div class="detalle-imagen-bloque">
+        <img src="{{ camara.image.url }}" alt="{{ camara.titulo }}">
     </div>
-    <a href="{% url 'inicio' %}" class="volver-link" id="volverLink">volver</a>
+    <div class="detalle-info">
+        <div class="detalle-titulo">{{ camara.titulo }}</div>
+        <div class="detalle-descripcion">{{ camara.descripcion }}</div>
+        <div style="display: flex; align-items: center;">
+            <div class="detalle-precio">
+                ${{ camara.precio|formato_latino }}
+            </div>
+            {% if camara.cantidad == 0 %}
+                <button class="btn-agotado" disabled>Agotado</button>
+            {% endif %}
+        </div>
+        <a href="{% url 'inicio' %}" class="volver-link" id="volverLink">volver</a>
+    </div>
 </div>
 <script>
-    // Animación de salida igual a la de entrada pero invertida
+   
     document.getElementById('volverLink').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('detalleOverlay').classList.add('salida');
         document.getElementById('detalleContainer').classList.add('salida');
         setTimeout(() => {
             window.location.href = this.href;
-        }, 700); // Tiempo igual al de la animación CSS
+        }, 700); 
     });
 </script>
 {% endblock %}
