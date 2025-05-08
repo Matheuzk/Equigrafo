@@ -85,7 +85,7 @@
             {% for camara in camaras_nikon %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm camara-card">
-                    <div class="camara-overlay">
+                    <div class="camara-overlay" style="cursor:pointer;" onclick="window.location='{% url 'detalle_producto' camara.id %}'">
                         <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
                         <div class="camara-dark-overlay"></div>
                         <div class="camara-text">
@@ -97,7 +97,7 @@
                             <p>Precio: ${{ camara.precio|formato_latino }}</p>
                             {% if camara.cantidad == 0 %}
                             <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                                data-bs-target="#tiendaModal" onclick="event.stopPropagation();">Averiguar en la tienda</a>
                             {% endif %}
                         </div>
                     </div>
@@ -115,7 +115,7 @@
             {% for camara in camaras_sony %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm camara-card">
-                    <div class="camara-overlay">
+                    <div class="camara-overlay" style="cursor:pointer;" onclick="window.location='{% url 'detalle_producto' camara.id %}'">
                         <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
                         <div class="camara-dark-overlay"></div>
                         <div class="camara-text">
@@ -124,10 +124,10 @@
                             <p class="badge bg-danger">Agotado</p>
                             {% endif %}
                             <p>{{ camara.descripcion }}</p>
-                            <p>Precio: ${{ camara.precio }}</p>
+                            <p>Precio: ${{ camara.precio|formato_latino }}</p>
                             {% if camara.cantidad == 0 %}
                             <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                                data-bs-target="#tiendaModal" onclick="event.stopPropagation();">Averiguar en la tienda</a>
                             {% endif %}
                         </div>
                     </div>
@@ -145,7 +145,7 @@
             {% for camara in camaras_canon %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm camara-card">
-                    <div class="camara-overlay">
+                    <div class="camara-overlay" style="cursor:pointer;" onclick="window.location='{% url 'detalle_producto' camara.id %}'">
                         <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
                         <div class="camara-dark-overlay"></div>
                         <div class="camara-text">
@@ -154,10 +154,10 @@
                             <p class="badge bg-danger">Agotado</p>
                             {% endif %}
                             <p>{{ camara.descripcion }}</p>
-                            <p>Precio: ${{ camara.precio }}</p>
+                            <p>Precio: ${{ camara.precio|formato_latino }}</p>
                             {% if camara.cantidad == 0 %}
                             <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                                data-bs-target="#tiendaModal" onclick="event.stopPropagation();">Averiguar en la tienda</a>
                             {% endif %}
                         </div>
                     </div>
@@ -175,7 +175,7 @@
             {% for camara in camaras_otros %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm camara-card">
-                    <div class="camara-overlay">
+                    <div class="camara-overlay" style="cursor:pointer;" onclick="window.location='{% url 'detalle_producto' camara.id %}'">
                         <img src="{{ camara.image.url }}" class="img-fluid camara-image" alt="{{ camara.titulo }}">
                         <div class="camara-dark-overlay"></div>
                         <div class="camara-text">
@@ -184,10 +184,10 @@
                             <p class="badge bg-danger">Agotado</p>
                             {% endif %}
                             <p>{{ camara.descripcion }}</p>
-                            <p>Precio: ${{ camara.precio }}</p>
+                            <p>Precio: ${{ camara.precio|formato_latino }}</p>
                             {% if camara.cantidad == 0 %}
                             <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#tiendaModal">Averiguar en la tienda</a>
+                                data-bs-target="#tiendaModal" onclick="event.stopPropagation();">Averiguar en la tienda</a>
                             {% endif %}
                         </div>
                     </div>

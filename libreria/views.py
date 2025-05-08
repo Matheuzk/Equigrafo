@@ -56,6 +56,12 @@ def inicio(request):
 
     return render(request, 'cliente/inicio.html', context)
 
+# Agrega esto en views.py
+from .models import camaras_base
+
+def detalle_producto(request, id):
+    camara = camaras_base.objects.get(id=id)
+    return render(request, 'cliente/detalle_producto.html', {'camara': camara})
 
 def nosotros(request):
     return render(request, 'cliente/nosotros.html')

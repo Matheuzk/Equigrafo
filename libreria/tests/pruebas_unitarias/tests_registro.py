@@ -4,9 +4,14 @@ from ...models import Usuario
  
 
 class PruebaRegistroUsuario(TestCase):
-    def setUp(self):
-        # Configuración inicial del entorno de prueba
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Configuración inicial del entorno de prueba (una sola vez por clase)
         print("\n=== Prueba: Registro de Usuario ===")
+
+    def setUp(self):
+        # Configuración inicial antes de cada prueba
         self.usuario = Usuario.objects.create(
             email='testuser@example.com', 
             username='testuser',
@@ -16,7 +21,6 @@ class PruebaRegistroUsuario(TestCase):
             cargo='Gerente'
         )
 
-   
     def test_creacion_usuario(self):
         """Prueba la creación de un usuario y verifica sus atributos."""
         print("Verificando atributos del usuario creado...")
@@ -28,7 +32,6 @@ class PruebaRegistroUsuario(TestCase):
         self.assertEqual(self.usuario.cargo, 'Gerente')
         print("Prueba de creación de usuario completada exitosamente.")
 
-  
     def test_registro_usuario(self):
         """Prueba la vista de registro y verifica que se cree un nuevo usuario."""
         print("\n=== Prueba: Vista de Registro de Usuario ===")
