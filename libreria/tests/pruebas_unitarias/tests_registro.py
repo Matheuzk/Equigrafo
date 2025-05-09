@@ -7,11 +7,11 @@ class PruebaRegistroUsuario(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Configuración inicial del entorno de prueba (una sola vez por clase)
+        
         print("\n=== Prueba: Registro de Usuario ===")
 
     def setUp(self):
-        # Configuración inicial antes de cada prueba
+        
         self.usuario = Usuario.objects.create(
             email='testuser@example.com', 
             username='testuser',
@@ -22,19 +22,26 @@ class PruebaRegistroUsuario(TestCase):
         )
 
     def test_creacion_usuario(self):
+
         """Prueba la creación de un usuario y verifica sus atributos."""
+
         print("Verificando atributos del usuario creado...")
+
         self.assertEqual(self.usuario.email, 'testuser@example.com')
         self.assertEqual(self.usuario.username, 'testuser')
         self.assertEqual(self.usuario.nombre, 'Test')
         self.assertEqual(self.usuario.apellido, 'User')
         self.assertEqual(self.usuario.cedula, '1234567890')
         self.assertEqual(self.usuario.cargo, 'Gerente')
+
         print("Prueba de creación de usuario completada exitosamente.")
 
     def test_registro_usuario(self):
+
         """Prueba la vista de registro y verifica que se cree un nuevo usuario."""
+        
         print("\n=== Prueba: Vista de Registro de Usuario ===")
+
         response = self.client.post(reverse('registro'), {
             'email': 'newuser@ejemplo.com',
             'username': 'newuser',
@@ -50,10 +57,11 @@ class PruebaRegistroUsuario(TestCase):
             'pin': '10012'
         })
 
-        # Verificar que la respuesta sea un redireccionamiento
+        
         self.assertEqual(response.status_code, 302)
         print("Estado de respuesta correcto (302).")
 
-        # Verificar que el usuario se haya creado en la base de datos
+       
         self.assertTrue(Usuario.objects.filter(email='newuser@ejemplo.com').exists())
+
         print("Prueba de registro completada exitosamente.")
