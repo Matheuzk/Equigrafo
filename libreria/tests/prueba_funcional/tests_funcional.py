@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from django.test import LiveServerTestCase
 from ...models import Usuario
-from ..pruebas_unitarias.utils import log_test_info
+from libreria.tests.pruebas_unitarias.utils import log_test_info
 from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase  
 
