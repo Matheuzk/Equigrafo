@@ -56,7 +56,7 @@ def inicio(request):
 
     return render(request, 'cliente/inicio.html', context)
 
-# Agrega esto en views.py
+
 from .models import camaras_base
 
 def detalle_producto(request, id):
