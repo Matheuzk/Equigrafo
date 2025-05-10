@@ -15,27 +15,30 @@ class NavegacionBasicaTest(StaticLiveServerTestCase):
         self.browser.quit()
         print("[TEARDOWN] Navegador cerrado con éxito.")
 
+    def navegar_lento(self, by, value, espera=2):
+        elemento = self.browser.find_element(by, value)
+        time.sleep(espera)
+        elemento.click()
+        time.sleep(espera)
+
     @log_test_info
     def test_navegacion_inicio_registro_login_nosotros(self):
-        """Prueba: ir a inicio, luego registro, luego login, luego nosotros y cerrar."""
+        """Prueba: ir a inicio, luego registro, luego login, luego nosotros y cerrar lentamente."""
         print("\n[TEST] Navegando a la página de inicio...")
         self.browser.get(self.live_server_url + '/')
-        print("[TEST] Página de inicio cargada. Esperando 1 segundo...")
-        time.sleep(1)
-
-        print("[TEST] Navegando a la página de registro...")
-        self.browser.find_element(By.LINK_TEXT, 'Registrarse').click()
-        print("[TEST] Página de registro cargada. Esperando 1 segundo...")
-        time.sleep(1)
-
-        print("[TEST] Navegando a la página de login...")
-        self.browser.find_element(By.LINK_TEXT, 'Iniciar Sesión').click()
-        print("[TEST] Página de login cargada. Esperando 1 segundo...")
-        time.sleep(1)
-
-        print("[TEST] Navegando a la página de nosotros...")
-        self.browser.find_element(By.LINK_TEXT, 'Nosotros').click()
-        print("[TEST] Página de nosotros cargada. Esperando 2 segundos...")
+        print("[TEST] Página de inicio cargada. Esperando 2 segundos...")
         time.sleep(2)
+
+        print("[TEST] Navegando a la página de registro lentamente...")
+        self.navegar_lento(By.LINK_TEXT, 'Registrarse', espera=2)
+
+        print("[TEST] Navegando a la página de login lentamente...")
+        self.navegar_lento(By.LINK_TEXT, 'Iniciar Sesión', espera=2)
+
+        print("[TEST] Navegando a la página de nosotros lentamente...")
+        self.navegar_lento(By.LINK_TEXT, 'Nosotros', espera=2)
+
+        print("[TEST] Página de nosotros cargada. Esperando 3 segundos antes de cerrar...")
+        time.sleep(3)
 
         print("[TEST] Prueba de navegación básica finalizada.")
