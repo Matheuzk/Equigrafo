@@ -23,8 +23,6 @@ class PruebaRegistroUsuario(TestCase):
 
     def test_creacion_usuario(self):
 
-        """Prueba la creación de un usuario y verifica sus atributos."""
-
         print("Verificando atributos del usuario creado...")
 
         self.assertEqual(self.usuario.email, 'testuser@example.com')
@@ -37,8 +35,6 @@ class PruebaRegistroUsuario(TestCase):
         print("Prueba de creación de usuario completada exitosamente.")
 
     def test_registro_usuario(self):
-
-        """Prueba la vista de registro y verifica que se cree un nuevo usuario."""
         
         print("\n=== Prueba: Vista de Registro de Usuario ===")
 
