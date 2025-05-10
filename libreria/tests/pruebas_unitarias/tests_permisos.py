@@ -4,7 +4,9 @@ from libreria.models import Usuario
 
 class PermisosAccesoViewsTest(TestCase):
     def setUp(self):
+
         print("\n=== Prueba: Permisos de Acceso a Vistas Protegidas ===")
+
         self.gerente = Usuario.objects.create_user(
             email='gerente@test.com',
             username='gerente',
@@ -31,6 +33,7 @@ class PermisosAccesoViewsTest(TestCase):
         response = self.client.get(reverse('empleados'))
         self.assertEqual(response.status_code, 200)
         print("Acceso permitido para Gerente.")
+        
 
     def test_acceso_empleados_como_asistente(self):
         print("Intentando acceder a empleados como Asistente...")

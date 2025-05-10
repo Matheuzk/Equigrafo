@@ -8,7 +8,6 @@ class FacturarTestCase(TestCase):
        
         print("\n=== Prueba: Facturación ===")
         
-        
         self.user = get_user_model().objects.create_user(
             email="testuser@example.com",
             username="testuser",

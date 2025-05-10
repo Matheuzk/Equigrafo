@@ -30,7 +30,9 @@ class EmpleadosViewsTest(TestCase):
         self.client.login(email='gerente@test.com', password='testpass123')
 
     def test_empleados_view(self):
+
         print("Iniciando prueba de vista de empleados...")
+
         url = reverse('empleados')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -42,7 +44,9 @@ class EmpleadosViewsTest(TestCase):
         
 
     def test_empleado_detalles_view(self):
+
         print("Iniciando prueba de detalles de empleado...")
+
         url = reverse('empleado_detalles', args=[self.asistente.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -52,4 +56,5 @@ class EmpleadosViewsTest(TestCase):
         self.assertEqual(data['cedula'], '987654321')
         self.assertEqual(data['email'], 'asistente@test.com')
         self.assertEqual(data['cargo'], 'Asistente')
+        
         print("Detalles de empleado verificados correctamente.")
