@@ -32,7 +32,7 @@ class UsuarioLoginTest(StaticLiveServerTestCase):
 
     @log_test_info
     def test_usuario_login_y_varias_camaras(self):
-        """Prueba: login lento, crear cámara de prueba lento, luego cámaras Nikon y Sony rápido, esperar 20 segundos."""
+       
         print("\n[TEST] Navegando a la página de inicio...")
         self.browser.get(self.live_server_url + '/')
         time.sleep(1)
@@ -56,7 +56,6 @@ class UsuarioLoginTest(StaticLiveServerTestCase):
         self.browser.find_element(By.LINK_TEXT, 'Cámaras').click()
         time.sleep(1)
 
-        # --- Crear cámara de prueba (lento) ---
         print("[TEST] Haciendo clic en 'Agregar nueva cámara' para cámara de prueba...")
         self.browser.find_element(By.LINK_TEXT, 'Agregar nueva cámara').click()
         time.sleep(0.5)
@@ -75,7 +74,7 @@ class UsuarioLoginTest(StaticLiveServerTestCase):
         self.browser.find_element(By.XPATH, "//input[@type='submit' and @value='Enviar Información']").click()
         time.sleep(1)
 
-        # --- Crear cámara Nikon (rápido) ---
+      
         print("[TEST] Haciendo clic en 'Agregar nueva cámara' para Nikon...")
         self.browser.find_element(By.LINK_TEXT, 'Agregar nueva cámara').click()
         time.sleep(0.5)
@@ -94,7 +93,7 @@ class UsuarioLoginTest(StaticLiveServerTestCase):
         self.browser.find_element(By.XPATH, "//input[@type='submit' and @value='Enviar Información']").click()
         time.sleep(1)
 
-        # --- Crear cámara Sony (rápido) ---
+       
         print("[TEST] Haciendo clic en 'Agregar nueva cámara' para Sony...")
         self.browser.find_element(By.LINK_TEXT, 'Agregar nueva cámara').click()
         time.sleep(0.5)

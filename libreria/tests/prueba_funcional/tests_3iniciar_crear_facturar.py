@@ -74,7 +74,7 @@ class FacturarTest(StaticLiveServerTestCase):
         time.sleep(1)
 
         print("[TEST] Seleccionando la cámara creada dos veces (lento)...")
-        # Buscar la cámara por su título
+        
         camara_links = self.browser.find_elements(By.CLASS_NAME, 'list-group-item-action')
         for link in camara_links:
             if 'Cámara Factura' in link.text:
@@ -107,7 +107,7 @@ class FacturarTest(StaticLiveServerTestCase):
         time.sleep(2)
 
         print("[TEST] Dando clic en botón PDF de la última factura...")
-        # Esperar a que cargue la tabla y buscar el primer botón PDF
+       
         pdf_buttons = self.browser.find_elements(By.CLASS_NAME, 'btn-pastel-pdf')
         if pdf_buttons:
             pdf_buttons[0].click()
